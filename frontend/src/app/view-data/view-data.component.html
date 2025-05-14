@@ -1,0 +1,8 @@
+<h2>Consulter les données</h2>
+<input [(ngModel)]="city" placeholder="Entrez une ville">
+<button (click)="search()">Rechercher</button>
+
+<div *ngIf="data">
+  <h3>Dernière température pour {{ city }}</h3>
+  <p>{{ data.value }}°C ({{ data.recordedAt | date }})</p>
+</div>

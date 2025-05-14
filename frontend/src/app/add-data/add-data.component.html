@@ -1,0 +1,12 @@
+<h2>Ajouter des données</h2>
+<form [formGroup]="addForm" (ngSubmit)="onSubmit()">
+  <select formControlName="type">
+    <option value="temperature">Température</option>
+    <option value="humidity">Humidité</option>
+  </select>
+
+  <input type="text" formControlName="city" placeholder="Ville">
+  <input type="number" formControlName="value" placeholder="Valeur">
+
+  <button type="submit">Enregistrer</button>
+</form>

@@ -1,0 +1,74 @@
+version: '3'
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:80"  # Map le port 80 du conteneur vers le 4200 de l'hôte
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - temperature-service
+      - humidity-service
+    environment:
+      - TEMPERATURE_SERVICE_URL=http://temperature-service:3001
+      - HUMIDITY_SERVICE_URL=http://humidity-service:3002
+    networks:
+      - app-network
+
+  temperature-service:
+    build: ./temperature-service
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/temperatures
+    networks:
+      - app-network
+
+  humidity-service:
+    build: ./humidity-service
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/humidity
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=humidity
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongodb-data:
+  postgres-data:
