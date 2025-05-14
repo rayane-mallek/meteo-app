@@ -1,17 +1,12 @@
-# Étape de build
-FROM node:18-alpine AS build
-WORKDIR /app
+# Étape de build Angular
+FROM node:18-alpine as build
+WORKDIR /app/frontend
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build -- --configuration production
+RUN npm run build --prod
 
-# Étape d'exécution
+# Étape Nginx
 FROM nginx:alpine
-# Ajoutez cette ligne pour créer l'utilisateur nginx
-RUN adduser -D -H nginx2
-
-# Corrigez cette ligne - elle copie incorrectement les fichiers
-COPY --from=build . /usr/share/nginx/html
-# Votre fichier nginx.conf doit être séparé du Dockerfile
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/frontend /usr/share/nginx/html

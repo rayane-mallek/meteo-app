@@ -3,11 +3,11 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "4200:80"  # Map le port 80 du conteneur vers le 4200 de l'hôte
+      - "4200:80"
     depends_on:
       - backend
     networks:
-      - app-network
+    - app-network
 
   backend:
     build: ./backend
@@ -17,8 +17,8 @@ services:
       - temperature-service
       - humidity-service
     environment:
-      - TEMPERATURE_SERVICE_URL=http://temperature-service:3001
-      - HUMIDITY_SERVICE_URL=http://humidity-service:3002
+      - TEMPERATURE_SERVICE_URL=http://localhost:3001
+      - HUMIDITY_SERVICE_URL=http://localhost:3002
     networks:
       - app-network
 

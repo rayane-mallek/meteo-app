@@ -1,0 +1,12 @@
+<h2>Gestion des Températures</h2>
+<div *ngIf="data">
+  <p>Ville: {{ data.city }}</p>
+  <p>Température: {{ data.value }}°C</p>
+  <p>Dernière mise à jour: {{ data.recordedAt | date:'medium' }}</p>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input formControlName="city" placeholder="Ville">
+  <input formControlName="value" type="number" placeholder="Température">
+  <button type="submit">Enregistrer</button>
+</form>
