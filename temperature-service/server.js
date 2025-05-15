@@ -10,7 +10,7 @@ mongoose.connect(MONGODB_URI)
   .then(() => console.log('Connecté à MongoDB'))
   .catch(err => console.error('Erreur de connexion à MongoDB:', err));
 
-app.get('/temperature', async (req, res) => {
+app.get('/', async (req, res) => {
   try {
     const temperatures = await Temperature.find().sort({ recordedAt: -1 });
     res.json(temperatures);
@@ -19,7 +19,7 @@ app.get('/temperature', async (req, res) => {
   }
 });
 
-app.get('/temperature/:city', async (req, res) => {
+app.get('/:city', async (req, res) => {
   try {
     const temperature = await Temperature.findOne({ city: req.params.city })
       .sort({ recordedAt: -1 });
@@ -34,7 +34,7 @@ app.get('/temperature/:city', async (req, res) => {
   }
 });
 
-app.post('/temperature', async (req, res) => {
+app.post('/', async (req, res) => {
   try {
     const { city, value } = req.body;
     const temperature = new Temperature({ city, value });

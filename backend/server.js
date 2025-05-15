@@ -8,8 +8,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/temperature', temperatureRouter);
-app.use('/api/humidity', humidityRouter);
+app.use('/temperature', temperatureRouter);
+app.use('/humidity', humidityRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

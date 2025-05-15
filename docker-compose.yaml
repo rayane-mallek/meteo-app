@@ -1,53 +1,76 @@
 version: '3'
+
 services:
+  reverse-proxy:
+    image: traefik:v3.3
+    command:
+      - --api.insecure=true
+      - --providers.docker
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app-network
+
   frontend:
     build: ./frontend
-    ports:
-      - "4200:80"
-    depends_on:
-      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
     networks:
-    - app-network
+      - app-network
 
   backend:
     build: ./backend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - temperature-service
-      - humidity-service
     environment:
-      - TEMPERATURE_SERVICE_URL=http://temperature-service:3001  # Au lieu de localhost
-      - HUMIDITY_SERVICE_URL=http://humidity-service:3002        # Au lieu de localhost
+      - TEMPERATURE_SERVICE_URL=http://temperature-service:3001
+      - HUMIDITY_SERVICE_URL=http://humidity-service:3002
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.services.backend.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.strip-prefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.backend.middlewares=strip-prefix"
     networks:
       - app-network
 
   temperature-service:
     build: ./temperature-service
-    ports:
-      - "3001:3001"
-    depends_on:
-      - mongodb
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/temperatures
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.temperature.rule=PathPrefix(`/temperature`)"
+      - "traefik.http.routers.temperature.entrypoints=web"
+      - "traefik.http.services.temperature.loadbalancer.server.port=3001"
+      - "traefik.http.middlewares.strip-temp-prefix.stripprefix.prefixes=/temperature"
+      - "traefik.http.routers.temperature.middlewares=strip-temp-prefix"
     networks:
       - app-network
 
   humidity-service:
     build: ./humidity-service
-    ports:
-      - "3002:3002"
-    depends_on:
-      - postgres
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/humidity
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.humidity.rule=PathPrefix(`/humidity`)"
+      - "traefik.http.routers.humidity.entrypoints=web"
+      - "traefik.http.services.humidity.loadbalancer.server.port=3002"
+      - "traefik.http.middlewares.strip-humidity-prefix.stripprefix.prefixes=/humidity"
+      - "traefik.http.routers.humidity.middlewares=strip-humidity-prefix"
     networks:
       - app-network
 
+  # Les services de base de données restent identiques
   mongodb:
     image: mongo
-    ports:
-      - "27017:27017"
     volumes:
       - mongodb-data:/data/db
     networks:
@@ -55,8 +78,6 @@ services:
 
   postgres:
     image: postgres
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=humidity

@@ -6,7 +6,7 @@ const TEMPERATURE_SERVICE = process.env.TEMPERATURE_SERVICE_URL;
 
 router.get('/:city', async (req, res) => {
   try {
-    const response = await axios.get(`${TEMPERATURE_SERVICE}/temperature/${req.params.city}`);
+    const response = await axios.get(`${TEMPERATURE_SERVICE}/${req.params.city}`);
     res.json(response.data);
   } catch (error) {
     handleError(res, error, 'température');
@@ -15,7 +15,7 @@ router.get('/:city', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const response = await axios.post(`${TEMPERATURE_SERVICE}/temperature`, req.body);
+    const response = await axios.post(`${TEMPERATURE_SERVICE}`, req.body);
     res.status(201).json(response.data);
   } catch (error) {
     handleError(res, error, 'température');
@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const response = await axios.get(`${TEMPERATURE_SERVICE}/temperature`);
+    const response = await axios.get(`${TEMPERATURE_SERVICE}`);
     res.json(response.data);
   } catch (error) {
     handleError(res, error, 'température');

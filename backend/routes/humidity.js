@@ -6,7 +6,7 @@ const HUMIDITY_SERVICE = process.env.HUMIDITY_SERVICE_URL;
 
 router.get('/:city', async (req, res) => {
   try {
-    const response = await axios.get(`${HUMIDITY_SERVICE}/humidity/${req.params.city}`);
+    const response = await axios.get(`${HUMIDITY_SERVICE}/${req.params.city}`);
     res.json(response.data);
   } catch (error) {
     handleError(res, error, 'humidité');
@@ -15,7 +15,7 @@ router.get('/:city', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const response = await axios.post(`${HUMIDITY_SERVICE}/humidity`, req.body);
+    const response = await axios.post(`${HUMIDITY_SERVICE}`, req.body);
     res.status(201).json(response.data);
   } catch (error) {
     handleError(res, error, 'humidité');
@@ -24,7 +24,8 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const response = await axios.get(`${HUMIDITY_SERVICE}/humidity`);
+    const response = await axios.get(`${HUMIDITY_SERVICE}`);
+
     res.json(response.data);
   } catch (error) {
     handleError(res, error, 'humidité');

@@ -8,7 +8,7 @@ sequelize.sync()
   .then(() => console.log('Connecté à PostgreSQL'))
   .catch(err => console.error('Erreur de connexion à PostgreSQL:', err));
 
-app.get('/humidity/:city', async (req, res) => {
+app.get('/:city', async (req, res) => {
   try {
     const humidity = await Humidity.findOne({
       where: { city: req.params.city },
@@ -25,7 +25,7 @@ app.get('/humidity/:city', async (req, res) => {
   }
 });
 
-app.post('/humidity', async (req, res) => {
+app.post('/', async (req, res) => {
   try {
     const { city, value } = req.body;
     const humidity = await Humidity.create({ city, value });
@@ -35,7 +35,7 @@ app.post('/humidity', async (req, res) => {
   }
 });
 
-app.get('/humidity', async (req, res) => {
+app.get('/', async (req, res) => {
   try {
     const humidities = await Humidity.findAll({ order: [['recordedAt', 'DESC']] });
     res.json(humidities);
