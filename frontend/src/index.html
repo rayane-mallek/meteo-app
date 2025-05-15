@@ -1,13 +1,102 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <title>Frontend</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <title>Gestion Météo</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        input, button { padding: 8px; margin: 5px; }
+        .entries { margin-top: 15px; }
+        .entry { padding: 10px; background: #f5f5f5; margin: 5px 0; border-radius: 4px; }
+    </style>
 </head>
 <body>
-  <app-root></app-root>
+    <!-- Formulaire d'ajout -->
+    <div class="section">
+        <h2>Ajouter une mesure</h2>
+        <input type="text" id="city" placeholder="Ville">
+        <input type="number" id="value" placeholder="Valeur">
+        <button onclick="addData('temperature')">➕ Température</button>
+        <button onclick="addData('humidity')">➕ Humidité</button>
+    </div>
+
+    <!-- Affichage des données -->
+    <div class="section">
+        <h2>Données actuelles</h2>
+        <button onclick="loadAllData()">🔄 Actualiser</button>
+        <div id="data" class="entries"></div>
+    </div>
+
+<script>
+const API_BASE = 'http://localhost:3000/api';
+
+// Fonction générique pour les requêtes API
+async function callApi(endpoint, method = 'GET', data = null) {
+    try {
+        const options = {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: data ? JSON.stringify(data) : null
+        };
+
+        const response = await fetch(`${API_BASE}/${endpoint}`, options);
+        return await response.json();
+    } catch (error) {
+        console.error('Erreur API:', error);
+        alert('Erreur de communication avec le serveur');
+    }
+}
+
+// Ajout de données
+async function addData(type) {
+    const city = document.getElementById('city').value;
+    const value = document.getElementById('value').value;
+
+    if(!city || !value) {
+        alert('Veuillez remplir tous les champs');
+        return;
+    }
+
+    await callApi(`${type}`, 'POST', { city, value });
+    loadAllData();
+}
+
+// Chargement des données
+async function loadAllData() {
+    const [temperatures, humidities] = await Promise.all([
+        callApi('temperature'),
+        callApi('humidity')
+    ]);
+
+    displayData([...temperatures, ...humidities]);
+}
+
+// Affichage des données
+function displayData(entries) {
+    const container = document.getElementById('data');
+    container.innerHTML = entries.map(entry => `
+        <div class="entry">
+            <strong>${entry.city}</strong> :
+            ${entry.value}${entry.value ? '°C' : '%'}
+            (${new Date(entry.recordedAt).toLocaleString()})
+            <button onclick="deleteEntry('${entry._id || entry.id}', '${'value' in entry ? 'temperature' : 'humidity'}')">
+                ❌ Supprimer
+            </button>
+        </div>
+    `).join('');
+}
+
+// Suppression d'entrée
+async function deleteEntry(id, type) {
+    if(confirm('Supprimer cette entrée ?')) {
+        await callApi(`${type}/${id}`, 'DELETE');
+        loadAllData();
+    }
+}
+
+// Chargement initial
+loadAllData();
+</script>
 </body>
 </html>

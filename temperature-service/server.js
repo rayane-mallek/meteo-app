@@ -10,6 +10,15 @@ mongoose.connect(MONGODB_URI)
   .then(() => console.log('Connecté à MongoDB'))
   .catch(err => console.error('Erreur de connexion à MongoDB:', err));
 
+app.get('/temperature', async (req, res) => {
+  try {
+    const temperatures = await Temperature.find().sort({ recordedAt: -1 });
+    res.json(temperatures);
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur du serveur' });
+  }
+});
+
 app.get('/temperature/:city', async (req, res) => {
   try {
     const temperature = await Temperature.findOne({ city: req.params.city })

@@ -35,6 +35,15 @@ app.post('/humidity', async (req, res) => {
   }
 });
 
+app.get('/humidity', async (req, res) => {
+  try {
+    const humidities = await Humidity.findAll({ order: [['recordedAt', 'DESC']] });
+    res.json(humidities);
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur du serveur' });
+  }
+});
+
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log(`Service d'humidités en écoute sur le port ${PORT}`);

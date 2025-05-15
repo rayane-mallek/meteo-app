@@ -1,21 +1,22 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
 import { AppComponent } from './app.component';
-import { routes } from './app.routes'; // Assure-toi d'avoir ce fichier
+import { HomeComponent } from './components/home/home.component';
+import { TemperatureComponent } from './components/temperature/temperature.component';
+import { HumidityComponent } from './components/humidity/humidity.component';
+import { routes } from './app.routes';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    TemperatureComponent,
+    HumidityComponent
+  ],
   imports: [
     BrowserModule,
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule.forRoot(routes),
-    HttpClientModule
+    RouterModule.forRoot(routes)
   ],
   bootstrap: [AppComponent]
 })

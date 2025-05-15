@@ -22,6 +22,15 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.get('/', async (req, res) => {
+  try {
+    const response = await axios.get(`${TEMPERATURE_SERVICE}/temperature`);
+    res.json(response.data);
+  } catch (error) {
+    handleError(res, error, 'température');
+  }
+});
+
 function handleError(res, error, serviceName) {
   console.error(`Erreur avec le service ${serviceName}:`, error.message);
   const status = error.response?.status || 500;

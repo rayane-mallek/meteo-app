@@ -17,8 +17,8 @@ services:
       - temperature-service
       - humidity-service
     environment:
-      - TEMPERATURE_SERVICE_URL=http://localhost:3001
-      - HUMIDITY_SERVICE_URL=http://localhost:3002
+      - TEMPERATURE_SERVICE_URL=http://temperature-service:3001  # Au lieu de localhost
+      - HUMIDITY_SERVICE_URL=http://humidity-service:3002        # Au lieu de localhost
     networks:
       - app-network
 
