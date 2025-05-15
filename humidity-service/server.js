@@ -44,6 +44,15 @@ app.get('/', async (req, res) => {
   }
 });
 
+app.delete('/:id', async (req, res) => {
+  try {
+    await Humidity.destroy({ where: { id: req.params.id } });
+    res.status(204).end();
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur de suppression' });
+  }
+});
+
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log(`Service d'humidités en écoute sur le port ${PORT}`);

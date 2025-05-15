@@ -31,6 +31,16 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  try {
+    await axios.delete(`${TEMPERATURE_SERVICE}/${req.params.id}`);
+    res.status(204).end();
+  } catch (error) {
+    handleError(res, error, 'température');
+  }
+});
+
+
 function handleError(res, error, serviceName) {
   console.error(`Erreur avec le service ${serviceName}:`, error.message);
   const status = error.response?.status || 500;
