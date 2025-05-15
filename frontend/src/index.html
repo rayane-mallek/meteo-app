@@ -78,9 +78,9 @@ function displayData(entries) {
     container.innerHTML = entries.map(entry => `
         <div class="entry">
             <strong>${entry.city}</strong> :
-            ${entry.value}${entry.value ? '°C' : '%'}
+            ${entry.value}${entry._id ? '°C' : '%'} <!-- Check MongoDB-style ID -->
             (${new Date(entry.recordedAt).toLocaleString()})
-            <button onclick="deleteEntry('${entry._id || entry.id}', '${'value' in entry ? 'temperature' : 'humidity'}')">
+            <button onclick="deleteEntry('${entry._id || entry.id}', '${entry._id ? 'temperature' : 'humidity'}')">
                 ❌ Supprimer
             </button>
         </div>
